@@ -41,6 +41,7 @@
 #include "fs_layout.h"
 #include "../perfcount.h"
 #include "../platform.h"
+#include "../savesync/sw_title.h"  // savewind: optional save sync (no-op without savesync.ini)
 
 #define FS_PATH_NOT_FOUND MAKE_RESULT(2, 1)
 #define FS_PATH_EXISTS MAKE_RESULT(2, 2)
@@ -2027,7 +2028,7 @@ static void filesystem(Service *s, IpcReq *req, IpcResp *resp) {
         ipc_return_object(resp, dsvc);
         break;
     }
-    case 10: break;  // Commit
+    case 10: sw_title_after_commit(); break;  // Commit
     case 11: case 12: OUT(int64_t, 0) = 0x40000000; resp_size(resp, 8); break;
 #ifdef __PROSPERO__
     case 13: if (rm_rf(p, true)) resp->result = errno_result(); break;
@@ -2066,6 +2067,7 @@ SERVICE("fsp-srv", fsp_srv) {
     case 18: ipc_return_object(resp, open_host_fs("sdcard")); break;
     case 22: break;  // CreateSaveDataFileSystem
     case 51: case 53: {  // OpenSaveDataFileSystem(space, attribute)
+        sw_title_before_mount();
         uint8_t type = IN(uint8_t, 0x8 + 0x18);  // attribute.type
         char sub[64];
         snprintf(sub, sizeof sub, "save_%u", type);

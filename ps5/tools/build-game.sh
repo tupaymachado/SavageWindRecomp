@@ -132,6 +132,8 @@ export PS5_LINK_INPUTS="--gc-sections --wrap=exit --wrap=_exit --wrap=_Exit --wr
 $ncnn/build/src/libncnn.a $ns/libpietendo/bin/linux/libpietendo.a $ns/libtoolchain/bin/linux/libtoolchain.a \
 $ns/libfmt/bin/linux/libfmt.a $ns/liblz4/bin/linux/liblz4.a $ns/libmbedtls/bin/linux/libmbedtls.a \
 $shaderc/lib/libshaderc_combined.a ${ffmpeg[*]:1} $fonts/lib/libfreetype.a --end-group"
+# savewind: in-title save sync (runtime/savesync), one object exporting only its two fs.c hooks
+export PS5_LINK_INPUTS="$PS5_LINK_INPUTS $(bash runtime/savesync/build-ps5.sh "$sdk" | tail -n 1)"
 app=$(bash ps5/tools/build-title.sh "$title_name" \
     "${console_sources[@]}" runtime/platform/main_ps5.c runtime/platform/s7_ps5.c runtime/platform/ps5.c runtime/platform/gamelib_ps5.c \
     runtime/platform/exefs_ps5.c runtime/platform/home_art_ps5.cpp runtime/ps5/sdl_shim.c runtime/ps5/log.c runtime/ps5/unavailable.c runtime/ps5/diagnostics.cpp \
